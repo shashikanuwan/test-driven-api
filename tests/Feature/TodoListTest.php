@@ -16,16 +16,15 @@ class TodoListTest extends TestCase
     {
 
         // preperation / prepare
-        TodoList::create(['name' => 'my list']);
-
+        TodoList::factory()->create(['name' => 'my list']);
 
 
         // action / perform
         $response = $this->getJson(route('todo-list.store'));
 
 
-
         // assertion / predict
         $this->assertEquals(1, count($response->json()));
+        $this->assertEquals('my list', $response->json()[0]['name']);
     }
 }
