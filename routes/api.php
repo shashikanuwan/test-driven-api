@@ -11,3 +11,9 @@ Route::get('todo-list/{list}', [TodoListController::class, 'show'])
 
 Route::post('todo-list', [TodoListController::class, 'store'])
     ->name('todo-list.store');
+
+Route::delete('todo-list/{list}', [TodoListController::class, 'destory'])
+    ->name('todo-list.destory');
+
+Route::patch('todo-list/{list}', [TodoListController::class, 'update'])
+    ->name('todo-list.update');
