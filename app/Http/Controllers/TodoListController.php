@@ -4,9 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\TodoListRequest;
 use App\Models\TodoList;
-use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpKernel\HttpCache\ResponseCacheStrategy;
 
 class TodoListController extends Controller
 {
@@ -17,9 +15,9 @@ class TodoListController extends Controller
         return response($lists);
     }
 
-    public function show(TodoList $list)
+    public function show(TodoList $todo_list)
     {
-        return response($list);
+        return response($todo_list);
     }
 
     public function store(TodoListRequest $request)
@@ -28,17 +26,17 @@ class TodoListController extends Controller
         return $list;
     }
 
-    public function destory(TodoList $list)
+    public function destroy(TodoList $todo_list)
     {
-        $list->delete();
+        $todo_list->delete();
 
         return response('', Response::HTTP_NO_CONTENT);
     }
 
-    public function update(TodoListRequest $request, TodoList $list)
+    public function update(TodoListRequest $request, TodoList $todo_list)
     {
-        $list->update($request->all());
+        $todo_list->update($request->all());
 
-        return response($list);
+        return response($todo_list);
     }
 }

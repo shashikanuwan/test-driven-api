@@ -24,7 +24,7 @@ class TodoListTest extends TestCase
         $response = $this->getJson(route('todo-list.index'));
 
         $this->assertEquals(1, count($response->json()));
-        $this->assertEquals('my list', $response->json()[0]['name']);
+        $this->assertEquals($this->list->name, $response->json()[0]['name']);
     }
 
     public function test_fetch_single_todo_list()
@@ -58,7 +58,7 @@ class TodoListTest extends TestCase
 
     public function test_detele_todo_list()
     {
-        $this->deleteJson(route('todo-list.destory', $this->list->id))
+        $this->deleteJson(route('todo-list.destroy', $this->list->id))
             ->assertNoContent();
 
         $this->assertDatabaseMissing('todo_lists', ['name' => $this->list->name]);
