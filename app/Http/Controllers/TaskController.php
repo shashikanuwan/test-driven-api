@@ -28,4 +28,11 @@ class TaskController extends Controller
 
         return response('', Response::HTTP_NO_CONTENT);
     }
+
+    public function update(Request $request, Task $task)
+    {
+        $task->update($request->all());
+
+        return response($task);
+    }
 }
