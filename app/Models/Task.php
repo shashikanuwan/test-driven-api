@@ -14,7 +14,7 @@ class Task extends Model
     public const NOT_STARTED = 'not_started';
     public const COMPLETED = 'completed';
 
-    protected $fillable = ['title', 'todo_list_id', 'status'];
+    protected $fillable = ['title', 'todo_list_id', 'status', 'description', 'label_id'];
 
     public function todo_list()
     {
