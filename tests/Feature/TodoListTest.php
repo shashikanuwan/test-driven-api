@@ -3,11 +3,9 @@
 namespace Tests\Feature;
 
 use App\Models\TodoList;
-use App\Models\User;
 use GuzzleHttp\Promise\Create;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
-use Laravel\Sanctum\Sanctum;
 use Tests\TestCase;
 
 class TodoListTest extends TestCase
@@ -18,12 +16,16 @@ class TodoListTest extends TestCase
     public function setUp(): void
     {
         parent::setUp();
-        $this->authUser();
-        $this->list =  $this->createTodoList(['name' => 'my list']);
+        $user =   $this->authUser();
+        $this->list =  $this->createTodoList([
+            'name' => 'my list',
+            'user_id' => $user->id
+        ]);
     }
 
     public function test_fetch_all_todo_list()
     {
+        $this->createTodoList();
         $response = $this->getJson(route('todo-list.index'));
 
         $this->assertEquals(1, count($response->json()));
@@ -42,7 +44,7 @@ class TodoListTest extends TestCase
     public function test_store_new_todo_list()
     {
         $list = TodoList::factory()->make();
-        $response = $this->postJson(route('todo-list.store'), ['name' => $list->name])
+        $this->postJson(route('todo-list.store'), ['name' => $list->name])
             ->assertCreated()
             ->json();
 
@@ -53,7 +55,7 @@ class TodoListTest extends TestCase
     {
         $this->withExceptionHandling();
 
-        $response = $this->postJson(route('todo-list.store'))
+        $this->postJson(route('todo-list.store'))
             ->assertUnprocessable()
             ->assertJsonValidationErrors(['name']);
     }
@@ -78,7 +80,7 @@ class TodoListTest extends TestCase
     {
         $this->withExceptionHandling();
 
-        $response = $this->patchJson(route('todo-list.update', $this->list->id))
+        $this->patchJson(route('todo-list.update', $this->list->id))
             ->assertUnprocessable()
             ->assertJsonValidationErrors(['name']);
     }
