@@ -19,7 +19,6 @@ class LoginTest extends TestCase
             'password' => 'password'
         ])
             ->assertOk();
-
         $this->assertArrayHasKey('token', $response->json());
     }
 
