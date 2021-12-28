@@ -10,6 +10,6 @@ class RegisterController extends Controller
 {
     public function __invoke(RegisterRequest $request)
     {
-        return $user =  User::create($request->validated());
+        return User::create($request->validated());
     }
 }
