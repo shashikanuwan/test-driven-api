@@ -5,13 +5,12 @@ namespace App\Http\Controllers;
 use App\Http\Resources\TaskResource;
 use App\Models\Task;
 use App\Models\WebService;
+use APP\Services\GoogleDrive;
+use APP\Services\Zipper;
 use Google\Client;
-use Google\Service\Drive;
-use Google\Service\Drive\DriveFile;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Symfony\Component\HttpFoundation\Response;
-use ZipArchive;
 
 class WebServiceController extends Controller
 {
@@ -43,36 +42,18 @@ class WebServiceController extends Controller
         return $service;
     }
 
-    public function store(Request $request, WebService $web_service, Client $client)
+    public function store(WebService $web_service, GoogleDrive $drive)
     {
-        $access_token = $web_service->token['access_token'];
-
-        $client->setAccessToken($access_token);
-        $service = new Drive($client);
-        $file = new DriveFile();
-
         $tasks = Task::query()->where('created_at', '>=', now()->subDays(7))->get();
         $jsonFileName = 'task_dump.json';
         Storage::put("/public/temp/$jsonFileName", TaskResource::collection($tasks)->toJson());
 
-        $zip = new ZipArchive();
-        $zipFileName = storage_path('app/public/temp/' . now()->timestamp . '-task.zip');
+        $zipFileName =  Zipper::createZipOf($jsonFileName);
 
-        if ($zip->open($zipFileName, ZipArchive::CREATE) === true) {
-            $filePath =  storage_path('app/public/temp/' . $jsonFileName);
-            $zip->addFile($filePath, $jsonFileName);
-        }
-        $zip->close();
+        $access_token = $web_service->token['access_token'];
+        $drive->uploadFile($zipFileName, $access_token);
 
-        $file->setName("HelloWorld.zip");
-        $service->files->create(
-            $file,
-            array(
-                'data' => file_get_contents($zipFileName),
-                'mimeType' => 'application/octet-stream',
-                'uploadType' => 'multipart'
-            )
-        );
+        Storage::deleteDirectory('public/temp');
 
         return response('Uploaded', Response::HTTP_CREATED);
     }
