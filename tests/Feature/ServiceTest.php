@@ -36,7 +36,7 @@ class ServiceTest extends TestCase
     {
         $mock = $this->mock(Client::class, function (MockInterface $mock) {
             $mock->shouldReceive('fetchAccessTokenWithAuthCode')
-                ->andReturn('fake-token');
+                ->andReturn(['access_token'=> 'fake-token']);
         });
 
         $responce = $this->postJson(route('web-service.callback'), [
@@ -46,7 +46,7 @@ class ServiceTest extends TestCase
 
         $this->assertDatabaseHas('web_services', [
             'user_id' => $this->user->id,
-            'token' => '"{\"access_token\":\"fake-token\"}"'
+            'token' => json_encode(['access_token'=> 'fake-token'])
         ]);
 
         //$this->assertNotNull($this->user->services->first()->token);
