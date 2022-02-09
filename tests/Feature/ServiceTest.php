@@ -2,7 +2,9 @@
 
 namespace Tests\Feature;
 
+use Google\Client;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Mockery\MockInterface;
 use Tests\TestCase;
 
 class ServiceTest extends TestCase
@@ -26,13 +28,24 @@ class ServiceTest extends TestCase
 
     public function test_service_callback_will_store_token()
     {
+        $mock = $this->mock(Client::class, function (MockInterface $mock) {
+            $mock->shouldReceive('setClientId')->once();
+            $mock->shouldReceive('setClientSecret')->once();
+            $mock->shouldReceive('setRedirectUri')->once();
+            $mock->shouldReceive('fetchAccessTokenWithAuthCode')
+                ->andReturn('fake-token');
+        });
+
         $responce = $this->postJson(route('web-service.callback'), [
             'code' => 'dummy'
         ])
             ->assertCreated();
 
-        $this->assertDatabaseHas('web_services', ['user_id' => $this->user->id]);
+        $this->assertDatabaseHas('web_services', [
+            'user_id' => $this->user->id,
+            'token' => '{"access_token":"fake-token"}'
+        ]);
 
-        // $this->assertNotNull($this->user->services->first()->token);
+        //$this->assertNotNull($this->user->services->first()->token);
     }
 }
