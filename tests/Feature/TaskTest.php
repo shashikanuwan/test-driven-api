@@ -26,11 +26,10 @@ class TaskTest extends TestCase
 
         $response = $this->getJson(route('todo-list.task.index', $list->id))
             ->assertOk()
-            ->json();
+            ->json('data');
 
         $this->assertEquals(1, count($response));
         $this->assertEquals($task->title, $response[0]['title']);
-        $this->assertEquals($response[0]['todo_list_id'], $list->id);
     }
 
     public function test_store_a_tasks_for_a_todo_list_without_a_label()
