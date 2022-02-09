@@ -4,7 +4,6 @@ namespace Tests\Feature;
 
 use App\Models\Label;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
 
 class LabelTest extends TestCase
@@ -61,7 +60,7 @@ class LabelTest extends TestCase
 
         $response =  $this->getJson(route('label.index'))
             ->assertOk()
-            ->json();
+            ->json('data');
 
         $this->assertEquals($response[0]['title'], $label->title);
     }

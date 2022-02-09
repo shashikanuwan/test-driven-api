@@ -4,7 +4,6 @@ namespace Tests\Feature;
 
 use App\Models\Task;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
 
 class TaskTest extends TestCase
@@ -21,7 +20,8 @@ class TaskTest extends TestCase
     {
         $list = $this->createTodoList();
         $list2 = $this->createTodoList();
-        $task = $this->createTask(['todo_list_id' => $list->id]);
+        $label =   $this->createLabel(['user_id' => auth()->id()]);
+        $task = $this->createTask(['todo_list_id' => $list->id, 'label_id' => $label->id]);
         $this->createTask(['todo_list_id' => $list2->id]);
 
         $response = $this->getJson(route('todo-list.task.index', $list->id))

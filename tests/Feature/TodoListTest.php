@@ -3,9 +3,7 @@
 namespace Tests\Feature;
 
 use App\Models\TodoList;
-use GuzzleHttp\Promise\Create;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
 
 class TodoListTest extends TestCase
@@ -26,17 +24,17 @@ class TodoListTest extends TestCase
     public function test_fetch_all_todo_list()
     {
         $this->createTodoList();
-        $response = $this->getJson(route('todo-list.index'));
+        $response = $this->getJson(route('todo-list.index'))->json('data');
 
-        $this->assertEquals(1, count($response->json()));
-        $this->assertEquals($this->list->name, $response->json()[0]['name']);
+        $this->assertEquals(1, count($response));
+        $this->assertEquals($this->list->name, $response[0]['name']);
     }
 
     public function test_fetch_single_todo_list()
     {
         $response = $this->getJson(route('todo-list.show', $this->list->id))
             ->assertOk()
-            ->json();
+            ->json('data');
 
         $this->assertEquals($response['name'], $this->list->name);
     }
@@ -46,7 +44,7 @@ class TodoListTest extends TestCase
         $list = TodoList::factory()->make();
         $this->postJson(route('todo-list.store'), ['name' => $list->name])
             ->assertCreated()
-            ->json();
+            ->json('data');
 
         $this->assertDatabaseHas('todo_lists', ['name' => $list->name]);
     }
